@@ -27,11 +27,11 @@ app.use(cors({
 
 // Connect to MongoDB
 mongoose.connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true
 })
-    .then(() => console.log("✅ Connected to MongoDB on localhost"))
-    .catch(err => console.error("❌ MongoDB Connection Error:", err));
+    .then(() => console.log(" Connected to MongoDB on localhost"))
+    .catch(err => console.error(" MongoDB Connection Error:", err));
 
 
 
@@ -44,14 +44,14 @@ mongoose.connect(MONGO_URI, {
     
     const UserModel = mongoose.model("User", UserSchema, "users");
     UserModel.createCollection()
-        .then(() => console.log("✅ Collection created"))
-        .catch((err) => console.log("❌ Error creating collection", err));
+        .then(() => console.log(" Collection created"))
+        .catch((err) => console.log(" Error creating collection", err));
     
     // Register Route
     router.post("/register", async (req, res) => {
         try {
             const { name, email, password } = req.body;
-            console.log("📥 Received registration data:", { name, email, password });
+            console.log(" Received registration data:", { name, email, password });
     
             if (!name || !email || !password) {
                 return res.status(400).json({ message: "All fields are required" });
@@ -61,14 +61,14 @@ mongoose.connect(MONGO_URI, {
             if (user) return res.status(400).json({ message: "User already exists" });
     
             const hashedPassword = await bcrypt.hash(password, 10);
-            console.log("🔐 Hashed Password:", hashedPassword);
+            console.log(" Hashed Password:", hashedPassword);
     
             user = new UserModel({ name, email, password: hashedPassword });
             await user.save();
     
             res.status(201).json({ message: "User registered successfully" });
         } catch (error) {
-            console.error("❌ Registration Error:", error);
+            console.error(" Registration Error:", error);
             res.status(500).json({ message: "Server error during registration" });
         }
     });
@@ -77,7 +77,7 @@ mongoose.connect(MONGO_URI, {
     router.post("/login", async (req, res) => {
         try {
             const { email, password } = req.body;
-            console.log("📥 Received login request:", { email, password });
+            console.log(" Received login request:", { email, password });
     
             if (!email || !password) {
                 return res.status(400).json({ message: "Email and password are required" });
@@ -85,26 +85,26 @@ mongoose.connect(MONGO_URI, {
     
             const user = await UserModel.findOne({ email });
             if (!user) {
-                console.log("❌ No user found with this email");
+                console.log(" No user found with this email");
                 return res.status(400).json({ message: "Invalid Credentials" });
             }
     
-            console.log("✅ User found:", { id: user._id, email: user.email, storedPassword: user.password });
+            console.log(" User found:", { id: user._id, email: user.email, storedPassword: user.password });
     
             const isMatch = await bcrypt.compare(password, user.password);
-            console.log("🔍 Comparing:", password, "vs", user.password);
-            console.log(`🔍 Password Match Status: ${isMatch ? "✅ Match" : "❌ Mismatch"}`);
+            console.log(" Comparing:", password, "vs", user.password);
+            console.log(` Password Match Status: ${isMatch ? " Match" : " Mismatch"}`);
     
             if (!isMatch) {
                 return res.status(400).json({ message: "Invalid Credentials" });
             }
     
             const token = jwt.sign({ id: user._id }, "secretkey", { expiresIn: "1h" });
-            console.log("✅ Token generated successfully");
+            console.log(" Token generated successfully");
     
             res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
         } catch (error) {
-            console.error("❌ Login Error:", error);
+            console.error(" Login Error:", error);
             res.status(500).json({ message: "Server error during login" });
         }
     });
@@ -152,7 +152,7 @@ app.put('/DashPage/:id', async (req, res) => {
         // Respond with the updated patient data
         res.status(200).json({ success: true, data: updatedPatient });
     } catch (error) {
-        console.error("❌ Error updating patient data:", error);
+        console.error(" Error updating patient data:", error);
         res.status(500).json({ success: false, message: "Error updating patient data", error });
     }
 });
@@ -174,7 +174,7 @@ app.get('/DashPage/:id', async (req, res) => {
         // Respond with the patient data
         res.status(200).json({ success: true, data: patient });
     } catch (error) {
-        console.error("❌ Error fetching patient data:", error);
+        console.error(" Error fetching patient data:", error);
         res.status(500).json({ success: false, message: "Error fetching patient data", error });
     }
 });
@@ -195,28 +195,28 @@ app.delete('/DashPage/:id', async (req, res) => {
 
         res.status(200).json({ success: true, message: "Patient deleted successfully", patientId: id });
     } catch (error) {
-        console.error("❌ Error deleting patient:", error);
+        console.error(" Error deleting patient:", error);
         res.status(500).json({ success: false, message: "Error deleting patient" });
     }
 });
   
 
-// ✅ Route: Fetch All Patients (GET /DashPage)
+//  Route: Fetch All Patients (GET /DashPage)
 app.get('/DashPage', async (req, res) => {
     try {
         const patients = await PatientModel.find(); // Fetch all patient data
-        console.log("✅ Sending Patients Data to Frontend:", patients);
+        console.log(" Sending Patients Data to Frontend:", patients);
         res.status(200).json({ data: patients });
     } catch (error) {
-        console.error("❌ Error fetching patient data:", error);
+        console.error(" Error fetching patient data:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
-// ✅ Route: Insert New Patient Data (POST /DashPredict)
+//  Route: Insert New Patient Data (POST /DashPredict)
 app.post('/DashPredict', async (req, res) => {
     try {
-        console.log("📥 Received Data from Frontend:", req.body);
+        console.log(" Received Data from Frontend:", req.body);
 
         const { patientName, patientID } = req.body;
         if (!patientName || !patientID) {
@@ -226,10 +226,10 @@ app.post('/DashPredict', async (req, res) => {
         // Insert Data into Database
         const newPatient = new PatientModel(req.body);
         await newPatient.save();
-        console.log("✅ Data Inserted Successfully:", newPatient);
+        console.log(" Data Inserted Successfully:", newPatient);
         res.status(201).json({ message: "Data inserted successfully", data: newPatient });
     } catch (error) {
-        console.error("❌ Error inserting data:", error);
+        console.error(" Error inserting data:", error);
         if (error.code === 11000) { // Duplicate key error for patientID
             return res.status(400).json({ error: "Duplicate patientID found!" });
         }
@@ -239,5 +239,5 @@ app.post('/DashPredict', async (req, res) => {
 
 // Start Server
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(` Server running on http://localhost:${PORT}`);
 });
